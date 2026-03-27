@@ -1,253 +1,146 @@
-import React from "react";
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
-export default function LandingPage() {
+export default function LoginPage() {
+  const { login } = useAuth();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    const success = login(email, password);
+    setLoading(false);
+    if (success) {
+      router.push("/home");
+    } else {
+      setError("Invalid email or password.");
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header variant="landing" />
+    <div
+  className="min-h-screen flex flex-col items-center justify-center px-4"
+  style={{
+    backgroundImage: "url('/bg.webp')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+      {/* 🔥 TITLE + SUBTITLE */}
+<div className="text-center mb-6 max-w-md">
+  <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-snug">
+    A controlled network where serious Channel Partners drive real project sales.
+  </h1>
+  <p className="text-gray-500 text-sm mt-2">
+    *Access is limited to verified Channel Partners
+  </p>
+</div>
 
-      {/* Hero Section */}
-      <main
-        className="relative flex-1 flex items-center justify-center"
-        style={{ minHeight: "100vh" }}
-      >
-        {/* Background image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/bg.webp"
-            alt="Real Estate Background"
-            fill
-            style={{ objectFit: "cover" }}
-            priority
-            quality={90}
+     
+
+      {/* 🔥 LOGIN BOX */}
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl">
+ {/* 🔥 LOGO */}
+      <div className="mb-6">
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={250}
+          height={100}
+          className="mx-auto"
+        />
+      </div>
+        {error && (
+          <div className="mb-4 text-red-600 text-sm">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Email */}
+          <input
+            type="email"
+            placeholder="Email ID"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border p-3 rounded-lg"
           />
-          {/* Dark overlay */}
-          <div className="absolute inset-0 overlay-dark" />
-        </div>
 
-        {/* Hero content */}
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto stagger">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-black text-xs font-semibold mb-6 animate-fade-in-up"
-            style={{
-              background: "rgba(247,147,30,0.25)",
-              border: "1px solid rgba(247,147,30,0.5)",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            <span
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{
-                background: "var(--color-secondary)",
-                boxShadow: "0 0 6px var(--color-secondary)",
-              }}
+          {/* Password */}
+          <div className="relative">
+            <input
+              type={showPw ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border p-3 rounded-lg"
             />
-            India's #1 Channel Partner Network
+            <button
+              type="button"
+              onClick={() => setShowPw(!showPw)}
+              className="absolute right-3 top-3 text-sm text-gray-500"
+            >
+              {showPw ? "Hide" : "Show"}
+            </button>
           </div>
 
-          {/* Heading */}
-          <h1
-            className="text-black font-bold leading-tight mb-4 animate-fade-in-up"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(2rem, 5vw, 3.8rem)",
-            }}
-          >
-            Connect. Discover.{" "}
-            <span style={{ color: "var(--color-secondary)" }}>
-              Close Deals.
-            </span>
-          </h1>
-
-          <p className="text-black/80 text-base md:text-lg mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-up">
-            The ultimate platform for real estate channel partners to explore
-            projects, connect with developers, and grow your portfolio.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-in-up">
-            <Link href="/signup">
-              <button
-                className="px-8 py-3.5 rounded-xl font-bold text-black text-base transition-all hover:scale-105"
-                style={{
-                  background: "var(--gradient-btn-orange)",
-                  boxShadow: "0 4px 20px rgba(247,147,30,0.5)",
-                  fontFamily: "var(--font-display)",
-                }}
-              >
-                Get Started Free
-              </button>
-            </Link>
-            <Link href="/login">
-              <button
-                className="px-8 py-3.5 rounded-xl font-semibold text-black text-base transition-all hover:scale-105"
-                style={{
-                  background: "rgba(255,255,255,0.12)",
-                  border: "1.5px solid rgba(255,255,255,0.5)",
-                  backdropFilter: "blur(10px)",
-                  fontFamily: "var(--font-display)",
-                }}
-              >
-                Login to Account
-              </button>
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-14 grid grid-cols-3 gap-4 max-w-lg mx-auto animate-fade-in-up">
-            {[
-              { value: "5,000+", label: "Projects Listed" },
-              { value: "1,200+", label: "Developers" },
-              { value: "50,000+", label: "Partners" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="text-center px-2 py-3 rounded-xl"
-                style={{
-                  background: "rgba(255,255,255,0.08)",
-                  backdropFilter: "blur(8px)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                }}
-              >
-                <p
-                  className="text-xl md:text-2xl font-bold"
-                  style={{
-                    color: "var(--color-secondary)",
-                    fontFamily: "var(--font-display)",
-                  }}
-                >
-                  {s.value}
-                </p>
-                <p className="text-black/70 text-xs mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce">
-          <span className="text-black/50 text-xs">Scroll</span>
-          <svg
-            className="w-5 h-5 text-black/50"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
-      </main>
-
-      {/* Features Section */}
-      <section className="py-16 px-4" style={{ background: "white" }}>
-        <div className="max-w-5xl mx-auto">
-          <h2
-            className="text-center font-bold text-2xl md:text-3xl mb-2"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-primary-dark)",
-            }}
-          >
-            Why Channel Partners Choose Us
-          </h2>
-          <p className="text-center text-gray-500 text-sm mb-10">
-            Everything you need to grow your real estate business.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
-            {[
-              {
-                icon: "🏗️",
-                title: "Verified Projects",
-                desc: "All listings are RERA-verified with complete documentation and developer credentials.",
-              },
-              {
-                icon: "🔍",
-                title: "Smart Filters",
-                desc: "Advanced search with 15+ filter parameters to find the perfect project instantly.",
-              },
-              {
-                icon: "💰",
-                title: "Best Brokerage",
-                desc: "Access exclusive brokerage plans and incentives directly from developers.",
-              },
-              {
-                icon: "📊",
-                title: "Market Intelligence",
-                desc: "Real-time price trends, availability, and market insights at your fingertips.",
-              },
-              {
-                icon: "🤝",
-                title: "Direct Developer Connect",
-                desc: "Communicate directly with sales teams and get priority support.",
-              },
-              {
-                icon: "📱",
-                title: "Mobile Ready",
-                desc: "Fully responsive platform — work from anywhere, any device.",
-              },
-            ].map((f) => (
-              <div
-                key={f.title}
-                className="card p-6 rounded-xl animate-fade-in-up hover:scale-[1.02] transition-transform"
-              >
-                <div className="text-3xl mb-3">{f.icon}</div>
-                <h3
-                  className="font-bold text-base mb-1"
-                  style={{
-                    color: "var(--color-primary-dark)",
-                    fontFamily: "var(--font-display)",
-                  }}
-                >
-                  {f.title}
-                </h3>
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  {f.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section
-        className="py-14 px-4 text-center"
-        style={{ background: "var(--gradient-primary)" }}
-      >
-        <h2
-          className="text-black font-bold text-2xl md:text-3xl mb-3"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Ready to Grow Your Business?
-        </h2>
-        <p className="text-black/80 text-sm mb-6 max-w-md mx-auto">
-          Join over 50,000 channel partners already using our platform.
-        </p>
-        <Link href="/signup">
+          {/* Login Button 🔥 ORANGE */}
           <button
-            className="px-8 py-3.5 rounded-xl font-bold text-black text-base transition-all hover:scale-105"
-            style={{
-              background: "rgba(255,255,255,0.2)",
-              border: "2px solid white",
-              fontFamily: "var(--font-display)",
-            }}
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg font-bold text-white bg-orange-500 hover:bg-orange-600"
           >
-            Create Free Account →
+            {loading ? "Signing in..." : "Login"}
           </button>
-        </Link>
-      </section>
 
-      <Footer />
+        </form>
+        {/* 🔥 SIGNUP */}
+      <p className="text-sm mt-4">
+        Don’t have an account?{" "}
+        <Link href="/signup" className="text-blue-600 font-semibold">
+          Sign Up
+        </Link>
+      </p>
+      </div>
+
+      {/* 🔥 BOTTOM BUTTONS */}
+      <div className="mt-6 flex gap-4 flex-wrap justify-center">
+
+  {/* Channel Partner PDF */}
+  <button
+    onClick={() => window.open("/channelpartner.pdf", "_blank")}
+    className="px-5 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-200"
+  >
+    Benefits for Channel Partner
+  </button>
+
+  {/* Developer PDF */}
+  <button
+    onClick={() => window.open("/forDevelopers.pdf", "_blank")}
+    className="px-5 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-semibold hover:bg-green-200"
+  >
+    Advantages for Developers
+  </button>
+
+</div>
+
+      
     </div>
   );
 }
